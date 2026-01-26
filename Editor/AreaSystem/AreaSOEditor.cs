@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AreaSystem;
 using ObjectSystem;
 using UnityEditor;
@@ -18,6 +19,8 @@ namespace AreaSystem.Editor
         private SerializedProperty _capsuleDirection;
         private SerializedProperty _gizmoColor;
 
+        private HashSet<string> _handledProperties = new HashSet<string>();
+
         private void OnEnable()
         {
             // Fields from ObjectSO
@@ -37,19 +40,37 @@ namespace AreaSystem.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+            _handledProperties.Clear();
+            _handledProperties.Add("m_Script");
 
+            // 1. Draw Script
+            SerializedProperty scriptProp = serializedObject.FindProperty("m_Script");
+            if (scriptProp != null)
+            {
+                using (new EditorGUI.DisabledScope(true))
+                {
+                    EditorGUILayout.PropertyField(scriptProp);
+                }
+            }
+
+            // 2. Draw Core Sections
             EditorGUILayout.LabelField("Base Object Configuration", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_name);
-            EditorGUILayout.PropertyField(_visualPrefab);
-            EditorGUILayout.PropertyField(_logicIdentity);
+            DrawHandledProperty(_name);
+            DrawHandledProperty(_visualPrefab);
+            DrawHandledProperty(_logicIdentity);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Area Configuration", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_gizmoColor);
-            EditorGUILayout.PropertyField(_shape);
+            DrawHandledProperty(_gizmoColor);
+            DrawHandledProperty(_shape);
+
+            // Mark conditional properties as handled even if skipped (to avoid drawing them twice at the bottom)
+            MarkAsHandled(_areaSize);
+            MarkAsHandled(_radius);
+            MarkAsHandled(_capsuleHeight);
+            MarkAsHandled(_capsuleDirection);
 
             AreaShape shape = (AreaShape)_shape.enumValueIndex;
-
             if (shape == AreaShape.Box)
             {
                 EditorGUILayout.PropertyField(_areaSize);
@@ -65,7 +86,45 @@ namespace AreaSystem.Editor
                 EditorGUILayout.PropertyField(_capsuleDirection);
             }
 
+            // 3. Automatically draw everything else (subclass variables, etc.)
+            DrawRemainingProperties();
+
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawHandledProperty(SerializedProperty prop)
+        {
+            if (prop == null) return;
+            EditorGUILayout.PropertyField(prop);
+            _handledProperties.Add(prop.name);
+        }
+
+        private void MarkAsHandled(SerializedProperty prop)
+        {
+            if (prop != null) _handledProperties.Add(prop.name);
+        }
+
+        private void DrawRemainingProperties()
+        {
+            SerializedProperty prop = serializedObject.GetIterator();
+            bool enterChildren = true;
+
+            bool hasHeader = false;
+
+            while (prop.NextVisible(enterChildren))
+            {
+                enterChildren = false;
+                if (_handledProperties.Contains(prop.name)) continue;
+
+                if (!hasHeader)
+                {
+                    EditorGUILayout.Space();
+                    EditorGUILayout.LabelField("Specific Parameters", EditorStyles.boldLabel);
+                    hasHeader = true;
+                }
+
+                EditorGUILayout.PropertyField(prop, true);
+            }
         }
     }
 }

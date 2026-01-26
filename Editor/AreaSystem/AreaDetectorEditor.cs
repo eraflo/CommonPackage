@@ -38,8 +38,7 @@ namespace AreaSystem.Editor
 
         private void CheckColliderConsistency(AreaDetector detector, AreaSO config)
         {
-            Collider currentCollider = detector.GetComponent<Collider>();
-            bool isCorrect = false;
+            Collider[] colliders = detector.GetComponents<Collider>();
 
             string expectedType = "";
             System.Type targetType = null;
@@ -47,32 +46,37 @@ namespace AreaSystem.Editor
             switch (config.Shape)
             {
                 case AreaShape.Box:
-                    isCorrect = currentCollider is BoxCollider;
                     expectedType = "BoxCollider";
                     targetType = typeof(BoxCollider);
                     break;
                 case AreaShape.Sphere:
-                    isCorrect = currentCollider is SphereCollider;
                     expectedType = "SphereCollider";
                     targetType = typeof(SphereCollider);
                     break;
                 case AreaShape.Capsule:
-                    isCorrect = currentCollider is CapsuleCollider;
                     expectedType = "CapsuleCollider";
                     targetType = typeof(CapsuleCollider);
                     break;
             }
 
-            if (!isCorrect)
+            bool hasCorrect = colliders.Any(c => c.GetType() == targetType);
+            bool hasIncorrect = colliders.Any(c => c.GetType() != targetType);
+
+            if (!hasCorrect || hasIncorrect)
             {
                 EditorGUILayout.Space();
                 Color oldColor = GUI.backgroundColor;
-                GUI.backgroundColor = Color.yellow;
+                GUI.backgroundColor = new Color(1f, 0.6f, 0.6f); // Light red/orange
 
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                EditorGUILayout.HelpBox($"Mismatch: AreaSO expects a {expectedType}, but the GameObject has {currentCollider?.GetType().Name ?? "no Collider"}.", MessageType.Warning);
 
-                if (GUILayout.Button($"Fix Collider (Switch to {expectedType})"))
+                string message = !hasCorrect
+                    ? $"[MISSING] This area needs a {expectedType}."
+                    : $"[CLEANUP] This area has extra or mismatched colliders.";
+
+                EditorGUILayout.HelpBox(message, MessageType.Warning);
+
+                if (GUILayout.Button($"Fix & Clean Colliders (Use {expectedType})"))
                 {
                     FixCollider(detector, targetType);
                 }
@@ -84,30 +88,45 @@ namespace AreaSystem.Editor
 
         private void FixCollider(AreaDetector detector, System.Type targetType)
         {
-            // Undo support
+            GameObject go = detector.gameObject;
+
+            // Start Undo group
             Undo.IncrementCurrentGroup();
             Undo.SetCurrentGroupName("Fix Area Detector Collider");
             int group = Undo.GetCurrentGroup();
 
-            // Store current trigger state if possible
-            bool wasTrigger = true;
-            Collider oldCollider = detector.GetComponent<Collider>();
-            if (oldCollider != null)
+            Collider[] colliders = go.GetComponents<Collider>();
+            bool wasTrigger = colliders.Any(c => c.isTrigger);
+            if (colliders.Length == 0) wasTrigger = true; // Default to trigger for areas
+
+            Collider targetRef = colliders.FirstOrDefault(c => c.GetType() == targetType);
+
+            // 1. Add target if missing (ADD FIRST to satisfy [RequireComponent])
+            if (targetRef == null)
             {
-                wasTrigger = oldCollider.isTrigger;
-                Undo.DestroyObjectImmediate(oldCollider);
+                targetRef = (Collider)Undo.AddComponent(go, targetType);
+                Debug.Log($"[AreaSystem] Added {targetType.Name} to {go.name}");
             }
 
-            // Add new collider
-            Collider newCollider = (Collider)Undo.AddComponent(detector.gameObject, targetType);
-            newCollider.isTrigger = wasTrigger;
+            // 2. Remove all EXCEPT the targetRef
+            foreach (var col in go.GetComponents<Collider>()) // Get fresh list
+            {
+                if (col != targetRef)
+                {
+                    Undo.DestroyObjectImmediate(col);
+                }
+            }
 
-            // Mark as dirty
-            EditorUtility.SetDirty(detector.gameObject);
+            // Ensure trigger state is preserved/set
+            targetRef.isTrigger = wasTrigger;
 
+            EditorUtility.SetDirty(go);
             Undo.CollapseUndoOperations(group);
 
-            Debug.Log($"[AreaSystem] Swapped collider to {targetType.Name} on {detector.gameObject.name}");
+            Debug.Log($"[AreaSystem] Normalized colliders to {targetType.Name} on {go.name}");
+
+            // Exit GUI to force a refresh of the inspector with the new component list
+            GUIUtility.ExitGUI();
         }
     }
 }
