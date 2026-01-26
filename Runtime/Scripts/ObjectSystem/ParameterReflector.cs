@@ -6,6 +6,8 @@ namespace ObjectSystem
 {
     public static class ParameterReflector
     {
+        private static Dictionary<Type, List<FieldInfo>> _fieldsCache = new Dictionary<Type, List<FieldInfo>>();
+
         /// <summary>
         /// Get all public fields of the instance, including parent classes
         /// </summary>
@@ -14,6 +16,11 @@ namespace ObjectSystem
         public static List<FieldInfo> GetEditableFields(ObjectSO so)
         {
             var fields = new List<FieldInfo>();
+
+            if (_fieldsCache.ContainsKey(so.GetType()))
+            {
+                return _fieldsCache[so.GetType()];
+            }
 
             // Get all public fields of the instance, including parent classes
             var allFields = so.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -26,6 +33,7 @@ namespace ObjectSystem
                     fields.Add(field);
                 }
             }
+            _fieldsCache.Add(so.GetType(), fields);
             return fields;
         }
 
