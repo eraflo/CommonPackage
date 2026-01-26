@@ -3,8 +3,8 @@ using System;
 namespace ObjectSystem
 {
     [AttributeUsage(AttributeTargets.Field)]
-    public class LeveleEditableAttribute : Attribute
+    public class LevelEditableAttribute : Attribute
     {
-        
+
     }
 }
