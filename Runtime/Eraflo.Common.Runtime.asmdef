@@ -1,7 +1,9 @@
 {
     "name": "Eraflo.Common.Runtime",
     "rootNamespace": "Eraflo.Common",
-    "references": [],
+    "references": [
+        "Newtonsoft.Json"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

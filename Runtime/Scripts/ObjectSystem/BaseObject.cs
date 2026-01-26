@@ -4,15 +4,16 @@ namespace ObjectSystem
 {
     public class BaseObject : MonoBehaviour
     {
-        [SerializeField] private ObjectSO _config;
+        [SerializeField] protected ObjectSO _config;
         [SerializeField] private GameObject _visualContainer;
 
         private ObjectData _runtimeData;
 
         public ObjectData RuntimeData => _runtimeData;
 
-        private void Awake()
+        protected virtual void Awake()
         {
+            // Create the runtime data from the config
             _runtimeData = new ObjectData(_config, transform.position, transform.rotation, transform.localScale);
 
             if (_visualContainer != null && _visualContainer.transform.parent == transform)
