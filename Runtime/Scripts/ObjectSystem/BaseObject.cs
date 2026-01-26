@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ObjectSystem
+namespace Eraflo.Common.ObjectSystem
 {
     public class BaseObject : MonoBehaviour
     {

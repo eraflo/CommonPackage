@@ -1,7 +1,7 @@
-using ObjectSystem;
+using Eraflo.Common.ObjectSystem;
 using UnityEngine;
 
-namespace AreaSystem
+namespace Eraflo.Common.AreaSystem
 {
     public enum AreaShape { Box, Sphere, Capsule }
 

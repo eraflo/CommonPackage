@@ -4,7 +4,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace ObjectSystem
+namespace Eraflo.Common.ObjectSystem
 {
     public static class ParameterReflector
     {

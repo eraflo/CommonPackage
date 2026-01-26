@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ObjectSystem
+namespace Eraflo.Common.ObjectSystem
 {
     public abstract class LogicIdentitySO : ScriptableObject
     {

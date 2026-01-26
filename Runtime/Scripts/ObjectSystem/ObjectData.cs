@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ObjectSystem
+namespace Eraflo.Common.ObjectSystem
 {
     [Serializable]
     public class ObjectData

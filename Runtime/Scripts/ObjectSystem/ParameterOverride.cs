@@ -1,6 +1,6 @@
 using System;
 
-namespace ObjectSystem
+namespace Eraflo.Common.ObjectSystem
 {
     [Serializable]
     public class ParameterOverride

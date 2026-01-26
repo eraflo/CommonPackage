@@ -1,9 +1,9 @@
 using System;
-using ObjectSystem;
+using Eraflo.Common.ObjectSystem;
 using UnityEngine;
 
 
-namespace AreaSystem
+namespace Eraflo.Common.AreaSystem
 {
     [RequireComponent(typeof(Collider))]
     public class AreaDetector : BaseObject

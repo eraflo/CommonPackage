@@ -1,10 +1,10 @@
 using System.Linq;
-using AreaSystem;
-using ObjectSystem;
+using Eraflo.Common.AreaSystem;
+using Eraflo.Common.ObjectSystem;
 using UnityEditor;
 using UnityEngine;
 
-namespace AreaSystem.Editor
+namespace Eraflo.Common.AreaSystem.Editor
 {
     [CustomEditor(typeof(AreaDetector), true)]
     public class AreaDetectorEditor : UnityEditor.Editor

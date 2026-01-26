@@ -1,5 +1,5 @@
-using AreaSystem;
-using ObjectSystem;
+using Eraflo.Common.AreaSystem;
+using Eraflo.Common.ObjectSystem;
 using UnityEngine;
 
 namespace Eraflo.Common.AreaSystem
