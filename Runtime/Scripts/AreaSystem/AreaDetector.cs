@@ -8,40 +8,79 @@ namespace Eraflo.Common.AreaSystem
     [RequireComponent(typeof(Collider))]
     public class AreaDetector : BaseObject
     {
-        private Collider _collider;
+        [SerializeField] private Collider _colliderTrigger;
         private AreaSO _area;
 
         public Action<Collider> onTriggerEnter;
         public Action<Collider> onTriggerStay;
         public Action<Collider> onTriggerExit;
 
+        public Collider Collider => _collider;
+
+        public void SetCenter(Vector3 center)
+        {
+            if (_colliderTrigger is BoxCollider box) box.center = center;
+            else if (_colliderTrigger is SphereCollider sphere) sphere.center = center;
+            else if (_colliderTrigger is CapsuleCollider capsule) capsule.center = center;
+        }
+
         public void SetSize(Vector3 size)
         {
-            if (_collider is BoxCollider box) box.size = size;
+            if (_colliderTrigger is BoxCollider box) box.size = size;
         }
 
         public void SetRadius(float radius)
         {
-            if (_collider is SphereCollider sphere) sphere.radius = radius;
+            if (_colliderTrigger is SphereCollider sphere) sphere.radius = radius;
         }
 
         public void SetHeight(float height)
         {
-            if (_collider is CapsuleCollider capsule) capsule.height = height;
+            if (_colliderTrigger is CapsuleCollider capsule) capsule.height = height;
         }
 
         public void SetDirection(int direction)
         {
-            if (_collider is CapsuleCollider capsule) capsule.direction = direction;
+            if (_colliderTrigger is CapsuleCollider capsule) capsule.direction = direction;
         }
 
         protected override void Awake()
         {
             base.Awake();
-            _collider = GetComponent<Collider>();
-            _collider.isTrigger = true;
+            if(_colliderTrigger == null)
+            {
+                if (!TryGetComponent(out _colliderTrigger))
+                {
+                    Debug.LogError($"[AreaDetector] Collider trigger is missing on {gameObject.name}!", this);
+                    return;
+                }
+            }
+            _colliderTrigger.isTrigger = true;
 
             _area = _config as AreaSO;
+            SyncTriggerCollider();
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            SyncTriggerCollider();
+        }
+
+        public void SyncTriggerCollider()
+        {
+            _area = _config as AreaSO;
+            if (_area == null || _colliderTrigger == null) return;
+
+            SetCenter(_area.Center);
+            if (_area.Shape == AreaShape.Box) SetSize(_area.AreaSize);
+            else if (_area.Shape == AreaShape.Sphere) SetRadius(_area.Radius);
+            else if (_area.Shape == AreaShape.Capsule)
+            {
+                SetRadius(_area.Radius);
+                SetHeight(_area.CapsuleHeight);
+                SetDirection(_area.CapsuleDirection);
+            }
         }
 
         private void OnTriggerEnter(Collider other)
@@ -70,8 +109,9 @@ namespace Eraflo.Common.AreaSystem
             DrawAreaGizmos(false);
         }
 
-        private void OnDrawGizmosSelected()
+        protected override void OnDrawGizmosSelected()
         {
+            base.OnDrawGizmosSelected();
             DrawAreaGizmos(true);
         }
 
@@ -86,39 +126,37 @@ namespace Eraflo.Common.AreaSystem
             Matrix4x4 oldMatrix = Gizmos.matrix;
             Gizmos.matrix = transform.localToWorldMatrix;
 
+            Vector3 center = config.Center;
+
             switch (config.Shape)
             {
                 case AreaShape.Box:
-                    Gizmos.DrawCube(Vector3.zero, config.AreaSize);
+                    Gizmos.DrawCube(center, config.AreaSize);
                     Gizmos.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.8f);
-                    Gizmos.DrawWireCube(Vector3.zero, config.AreaSize);
+                    Gizmos.DrawWireCube(center, config.AreaSize);
                     break;
                 case AreaShape.Sphere:
-                    Gizmos.DrawSphere(Vector3.zero, config.Radius);
+                    Gizmos.DrawSphere(center, config.Radius);
                     Gizmos.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.8f);
-                    Gizmos.DrawWireSphere(Vector3.zero, config.Radius);
+                    Gizmos.DrawWireSphere(center, config.Radius);
                     break;
                 case AreaShape.Capsule:
-                    DrawCapsuleGizmo(config.Radius, config.CapsuleHeight, config.CapsuleDirection, baseColor);
+                    DrawCapsuleGizmo(center, config.Radius, config.CapsuleHeight, config.CapsuleDirection, baseColor);
                     break;
             }
 
             Gizmos.matrix = oldMatrix;
         }
 
-        private void DrawCapsuleGizmo(float radius, float height, int direction, Color color)
+        private void DrawCapsuleGizmo(Vector3 center, float radius, float height, int direction, Color color)
         {
-            // Simple visual representation of a capsule using wire spheres and lines
-            // or just a custom primitive if we want to be fancy. 
-            // For now, let's use a WireCapsule approach or simple spheres/lines.
-
-            Vector3 point1 = Vector3.zero;
-            Vector3 point2 = Vector3.zero;
+            Vector3 point1 = center;
+            Vector3 point2 = center;
             float offset = Mathf.Max(0, (height / 2f) - radius);
 
-            if (direction == 0) { point1.x = offset; point2.x = -offset; } // X
-            else if (direction == 1) { point1.y = offset; point2.y = -offset; } // Y
-            else { point1.z = offset; point2.z = -offset; } // Z
+            if (direction == 0) { point1.x += offset; point2.x -= offset; } // X
+            else if (direction == 1) { point1.y += offset; point2.y -= offset; } // Y
+            else { point1.z += offset; point2.z -= offset; } // Z
 
             Gizmos.DrawSphere(point1, radius);
             Gizmos.DrawSphere(point2, radius);

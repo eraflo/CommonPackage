@@ -2,7 +2,8 @@
     "name": "Eraflo.Common.Runtime",
     "rootNamespace": "Eraflo.Common",
     "references": [
-        "Newtonsoft.Json"
+        "Newtonsoft.Json",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
