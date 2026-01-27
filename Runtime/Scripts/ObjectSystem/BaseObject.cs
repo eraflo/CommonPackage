@@ -9,13 +9,24 @@ namespace Eraflo.Common.ObjectSystem
         [SerializeField] protected Collider _collider;
 
         private ObjectData _runtimeData;
+        [SerializeField] private Vector3 _initialScale = Vector3.one;
+        public Vector3 InitialScale 
+        { 
+            get => _initialScale; 
+            set => _initialScale = value; 
+        }
 
         public ObjectData RuntimeData => _runtimeData;
 
         protected virtual void Awake()
         {
+            if (_initialScale.sqrMagnitude < 0.0001f)
+            {
+                _initialScale = transform.localScale;
+            }
+            
             // Create the runtime data from the config
-            _runtimeData = new ObjectData(_config, transform.position, transform.rotation, transform.localScale);
+            _runtimeData = new ObjectData(_config, transform.position, transform.rotation, _initialScale);
 
             if (_visualContainer != null)
             {
