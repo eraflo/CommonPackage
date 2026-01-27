@@ -47,7 +47,7 @@ namespace Eraflo.Common.AreaSystem
         protected override void Awake()
         {
             base.Awake();
-            if(_colliderTrigger == null)
+            if (_colliderTrigger == null)
             {
                 if (!TryGetComponent(out _colliderTrigger))
                 {
@@ -61,11 +61,13 @@ namespace Eraflo.Common.AreaSystem
             SyncTriggerCollider();
         }
 
+#if UNITY_EDITOR
         protected override void OnValidate()
         {
             base.OnValidate();
             SyncTriggerCollider();
         }
+#endif
 
         public void SyncTriggerCollider()
         {
