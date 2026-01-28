@@ -16,5 +16,8 @@
         "name": "Eraflo",
         "email": "",
         "url": ""
+    },
+    "dependencies": {
+        "com.unity.xr.interaction.toolkit": "2.6.5"
     }
 }
