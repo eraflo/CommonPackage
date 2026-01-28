@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Eraflo.Common.ObjectSystem
@@ -24,7 +25,15 @@ namespace Eraflo.Common.ObjectSystem
         /// <summary>
         /// Global event triggered when any BaseObject is initialized.
         /// </summary>
-        public static event System.Action<BaseObject> OnObjectCreated;
+        public static event Action<BaseObject> OnObjectCreated;
+
+        public Action<Collider> onTriggerEnter;
+        public Action<Collider> onTriggerStay;
+        public Action<Collider> onTriggerExit;
+
+        public Action<Collision> onCollisionEnter;
+        public Action<Collision> onCollisionStay;
+        public Action<Collision> onCollisionExit;
 
         private ObjectData _runtimeData;
         [SerializeField] private Vector3 _initialScale = Vector3.one;
@@ -107,6 +116,15 @@ namespace Eraflo.Common.ObjectSystem
             _visualContainer.transform.localPosition = _config.VisualOffset;
             _visualContainer.transform.localScale = _config.VisualScale;
         }
+
+        // --- Unity Physics Callbacks ---
+        protected virtual void OnTriggerEnter(Collider other) => onTriggerEnter?.Invoke(other);
+        protected virtual void OnTriggerStay(Collider other) => onTriggerStay?.Invoke(other);
+        protected virtual void OnTriggerExit(Collider other) => onTriggerExit?.Invoke(other);
+
+        protected virtual void OnCollisionEnter(Collision collision) => onCollisionEnter?.Invoke(collision);
+        protected virtual void OnCollisionStay(Collision collision) => onCollisionStay?.Invoke(collision);
+        protected virtual void OnCollisionExit(Collision collision) => onCollisionExit?.Invoke(collision);
 
         protected virtual void OnDrawGizmos()
         {

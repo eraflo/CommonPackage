@@ -16,15 +16,15 @@ MonoBehaviour:
   _visualPrefab: {fileID: 1728367123960093460, guid: cb219fb371521054188c0bae8153e9cd,
     type: 3}
   _logicKey: CheckpointZone
-  _visualScale: {x: 1, y: 1, z: 1}
+  _visualScale: {x: 0.2, y: 0.2, z: 0.2}
   _pivotCorrection: {x: -0.5, y: -0.5, z: -0.5}
   _physicsCenter: {x: 0, y: -0.25, z: 0}
   _physicsSize: {x: 1, y: 0.5, z: 1}
   _shape: 0
+  _gizmoColor: {r: 0, g: 1, b: 0, a: 0.4}
   _center: {x: 0, y: 0.5, z: 0}
   _areaSize: {x: 1, y: 1, z: 1}
   _radius: 1
   _capsuleHeight: 2
   _capsuleDirection: 1
-  _gizmoColor: {r: 0, g: 1, b: 0, a: 0.4}
   _activeColor: {r: 0, g: 1, b: 1, a: 1}

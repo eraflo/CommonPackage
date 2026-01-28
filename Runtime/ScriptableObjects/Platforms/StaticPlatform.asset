@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9ebb693249b124690f142ab8296fc9, type: 3}
+  m_Name: StaticPlatform
+  m_EditorClassIdentifier: 
+  _name: Platform
+  _visualPrefab: {fileID: 8814771233844399499, guid: 951feb579e3b39140b4fe8b330bf1c32,
+    type: 3}
+  _logicKey: StaticPlatform
+  _visualScale: {x: 0.2, y: 0.2, z: 0.2}
+  _pivotCorrection: {x: -0.5, y: 0, z: 0.5}
+  _physicsCenter: {x: 0, y: 0.25, z: 0}
+  _physicsSize: {x: 1, y: 0.5, z: 1}

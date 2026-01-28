@@ -16,8 +16,8 @@ MonoBehaviour:
   _visualPrefab: {fileID: 6271547531199051888, guid: 91081864e0e21f142924bdb4dc0391bf,
     type: 3}
   _logicKey: Blower
-  _visualScale: {x: 1, y: 1, z: 1}
-  _pivotCorrection: {x: 0, y: 0, z: 0}
+  _visualScale: {x: 0.5, y: 0.5, z: 0.5}
+  _pivotCorrection: {x: 0, y: -0.5, z: 0}
   _physicsCenter: {x: 0, y: 0, z: 0}
   _physicsSize: {x: 1, y: 1, z: 1}
   _impactLayer:
@@ -25,3 +25,5 @@ MonoBehaviour:
     m_Bits: 64
   _windStrength: 10
   _particlePrefab: {fileID: 0}
+  _zoneCenter: {x: 0, y: 0, z: 2}
+  _zoneSize: {x: 1, y: 1, z: 4}
