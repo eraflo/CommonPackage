@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7239424242854402379}
   - component: {fileID: 3332685755077713497}
   - component: {fileID: 4921999698722017404}
+  - component: {fileID: 3797066756042378206}
   m_Layer: 0
   m_Name: StartZone
   m_TagString: Untagged
@@ -271,7 +272,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -290,7 +291,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isLocked: 0
-  lockVisual: {fileID: 5674911214868534292, guid: 04f7d08cfd6584d4b86fbfbafa14fcfa, type: 3}
+  lockVisual: {fileID: 5674911214868534292, guid: 04f7d08cfd6584d4b86fbfbafa14fcfa,
+    type: 3}
   lockedTint: {r: 0.7, g: 0.7, b: 1, a: 1}
   lockSound: {fileID: 8300000, guid: 383a76b97f0ecee4eae7edebd402de38, type: 3}
   unlockSound: {fileID: 8300000, guid: 0f9fa418d1b1a4d4b978cb5fbc4df1df, type: 3}
@@ -391,6 +393,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3797066756042378206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560846329464038134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 129e4e3a5595da6468f2a45edc866460, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawnCollider: {fileID: 7239424242854402379}
 --- !u!1 &2620361495703038606
 GameObject:
   m_ObjectHideFlags: 0
