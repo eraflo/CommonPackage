@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: FinishArea
   m_EditorClassIdentifier: 
   _name: FinishZone
-  _visualPrefab: {fileID: 8205206535906004307, guid: 7595ae119eb794643b7d34b48e234ba2, type: 3}
-  _logicIdentity: {fileID: 0}
+  _visualPrefab: {fileID: 8205206535906004307, guid: 7595ae119eb794643b7d34b48e234ba2,
+    type: 3}
+  _logicKey: FinishArea
+  _visualScale: {x: 1, y: 1, z: 1}
   _pivotCorrection: {x: -0.5, y: 0, z: -0.5}
   _physicsCenter: {x: 0, y: 0.25, z: 0}
   _physicsSize: {x: 1, y: 0.5, z: 1}

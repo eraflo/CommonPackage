@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3531350923273703621}
-  - component: {fileID: 4267486677592468386}
   - component: {fileID: 3918071799765402359}
   - component: {fileID: 7344924678062415749}
   - component: {fileID: 8129450285610514466}
@@ -39,27 +38,6 @@ Transform:
   - {fileID: 5885545048764538207}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &4267486677592468386
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1560846329464038134}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3918071799765402359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,9 +52,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _config: {fileID: 11400000, guid: 476b66821067f4f469061ef39306dd52, type: 2}
   _visualContainer: {fileID: 2620361495703038606}
-  _collider: {fileID: 4267486677592468386}
+  _physicsCollider: {fileID: 0}
+  _areaCollider: {fileID: 7239424242854402379}
   _initialScale: {x: 1, y: 1, z: 1}
-  _colliderTrigger: {fileID: 7239424242854402379}
 --- !u!54 &7344924678062415749
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -271,7 +249,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -290,7 +268,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isLocked: 0
-  lockVisual: {fileID: 5674911214868534292, guid: 04f7d08cfd6584d4b86fbfbafa14fcfa, type: 3}
+  lockVisual: {fileID: 5674911214868534292, guid: 04f7d08cfd6584d4b86fbfbafa14fcfa,
+    type: 3}
   lockedTint: {r: 0.7, g: 0.7, b: 1, a: 1}
   lockSound: {fileID: 8300000, guid: 383a76b97f0ecee4eae7edebd402de38, type: 3}
   unlockSound: {fileID: 8300000, guid: 0f9fa418d1b1a4d4b978cb5fbc4df1df, type: 3}

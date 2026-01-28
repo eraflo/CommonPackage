@@ -15,14 +15,16 @@ MonoBehaviour:
   _name: Launcher
   _visualPrefab: {fileID: 1592512833404804056, guid: 59189e46de99d644bbdb1d17c198aac2,
     type: 3}
-  _logicIdentity: {fileID: 0}
-  _pivotCorrection: {x: 0, y: 0, z: 0}
+  _logicKey: Launcher
+  _visualScale: {x: 0.5, y: 0.5, z: 0.5}
+  _pivotCorrection: {x: 0, y: -0.5, z: 0}
   _physicsCenter: {x: 0, y: 0, z: 0}
-  _physicsSize: {x: 1, y: 1, z: 1}
+  _physicsSize: {x: 0.8, y: 1, z: 0.8}
   _impactLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   _rotationSpeed: 90
   _fireRate: 1
   _searchAngleRange: 60
+  _detectionRange: 10
   _bulletPrefab: {fileID: 0}

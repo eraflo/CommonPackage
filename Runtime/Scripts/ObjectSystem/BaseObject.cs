@@ -2,18 +2,37 @@ using UnityEngine;
 
 namespace Eraflo.Common.ObjectSystem
 {
+    /// <summary>
+    /// Base component for all objects in the system.
+    /// Handles visual instantiation and synchronization of physical/area colliders.
+    /// </summary>
     public class BaseObject : MonoBehaviour
     {
+        [Header("Configuration")]
         [SerializeField] protected ObjectSO _config;
+
+        [Header("References")]
+        [Tooltip("The container where the visual prefab will be instantiated.")]
         [SerializeField] protected GameObject _visualContainer;
-        [SerializeField] protected Collider _collider;
+
+        [Tooltip("The collider representing the solid physical body (e.g., handles player collisions).")]
+        [SerializeField] protected Collider _physicsCollider;
+
+        [Tooltip("The collider representing the effect zone or trigger area (e.g., wind zone, detection arc).")]
+        [SerializeField] protected Collider _areaCollider;
+
+        /// <summary>
+        /// Global event triggered when any BaseObject is initialized.
+        /// </summary>
+        public static event System.Action<BaseObject> OnObjectCreated;
 
         private ObjectData _runtimeData;
         [SerializeField] private Vector3 _initialScale = Vector3.one;
-        public Vector3 InitialScale 
-        { 
-            get => _initialScale; 
-            set => _initialScale = value; 
+
+        public Vector3 InitialScale
+        {
+            get => _initialScale;
+            set => _initialScale = value;
         }
 
         public ObjectData RuntimeData => _runtimeData;
@@ -24,13 +43,16 @@ namespace Eraflo.Common.ObjectSystem
             {
                 _initialScale = transform.localScale;
             }
-            
-            // Create the runtime data from the config
-            _runtimeData = new ObjectData(_config, transform.position, transform.rotation, _initialScale);
 
-            if (_visualContainer != null)
+            // Create the runtime data container
+            if (_config != null)
             {
-                // Only instantiate if the container is empty to avoid duplicates
+                _runtimeData = new ObjectData(_config, transform.position, transform.rotation, _initialScale);
+            }
+
+            // Visual instantiation
+            if (_visualContainer != null && _config != null)
+            {
                 if (_visualContainer.transform.childCount == 0 && _config.VisualPrefab != null)
                 {
                     GameObject visual = Instantiate(_config.VisualPrefab, _visualContainer.transform);
@@ -39,102 +61,102 @@ namespace Eraflo.Common.ObjectSystem
                 }
             }
 
-            SyncPhysicsCollider();
+            SyncAllColliders();
             SyncVisualOffset();
 
-            // TODO: Add to the level manager this object data
+            // Broad-casting creation for project-specific logic injection
+            OnObjectCreated?.Invoke(this);
         }
 
-        protected virtual void Start()
-        {
-            // Implementation of Start ensures the component can be toggled in the inspector
-        }
+        protected virtual void Start() { }
 
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {
-            // Sync properties in the Editor when values change in the config
-            SyncPhysicsCollider();
+            SyncAllColliders();
             SyncVisualOffset();
         }
 #endif
 
-        public void SyncPhysicsCollider()
+        /// <summary>
+        /// Synchronizes both physics and area colliders based on current configuration.
+        /// </summary>
+        public void SyncAllColliders()
         {
-            if (_collider == null || _config == null) return;
+            if (_config == null) return;
 
-            _collider.isTrigger = false;
-            if (_collider is BoxCollider box)
+            // 1. Solid Physics (Always non-trigger)
+            if (_physicsCollider != null)
             {
-                box.center = _config.PhysicsCenter;
-                box.size = _config.PhysicsSize;
+                _physicsCollider.isTrigger = false;
+                _config.SyncPhysicsCollider(this, _physicsCollider);
             }
-            else if (_collider is SphereCollider sphere)
+
+            // 2. Area/Zone Physics (Always trigger)
+            if (_areaCollider != null)
             {
-                sphere.center = _config.PhysicsCenter;
-                sphere.radius = _config.PhysicsSize.x; // Use X as radius
-            }
-            else if (_collider is CapsuleCollider capsule)
-            {
-                capsule.center = _config.PhysicsCenter;
-                capsule.height = _config.PhysicsSize.y;
-                capsule.radius = _config.PhysicsSize.x;
+                _areaCollider.isTrigger = true;
+                _config.SyncAreaCollider(this, _areaCollider);
             }
         }
 
         public void SyncVisualOffset()
         {
             if (_config == null || _visualContainer == null) return;
-            
-            // Apply offset to the container level (Apply offset then scale)
+
             _visualContainer.transform.localPosition = _config.VisualOffset;
+            _visualContainer.transform.localScale = _config.VisualScale;
         }
 
-        protected virtual void OnDrawGizmosSelected()
+        protected virtual void OnDrawGizmos()
         {
             if (_config == null) return;
 
             Gizmos.matrix = transform.localToWorldMatrix;
-            Gizmos.color = new Color(0, 0.5f, 1f, 0.4f); // Blue for physics
 
-            if (_collider is BoxCollider)
+            // Draw Physics Body (Blue)
+            if (_physicsCollider != null)
             {
-                Gizmos.DrawCube(_config.PhysicsCenter, _config.PhysicsSize);
-                Gizmos.color = new Color(0, 0.5f, 1f, 0.8f);
-                Gizmos.DrawWireCube(_config.PhysicsCenter, _config.PhysicsSize);
+                Gizmos.color = new Color(0, 0.5f, 1f, 0.4f);
+                DrawColliderGizmo(_physicsCollider, _config.PhysicsCenter, _config.PhysicsSize);
             }
-            else if (_collider is SphereCollider)
-            {
-                Gizmos.DrawSphere(_config.PhysicsCenter, _config.PhysicsSize.x);
-                Gizmos.color = new Color(0, 0.5f, 1f, 0.8f);
-                Gizmos.DrawWireSphere(_config.PhysicsCenter, _config.PhysicsSize.x);
-            }
+
+            // Draw specific asset gizmos (e.g., Launcher sweeps, Blower zones)
+            _config.DrawGizmos(this);
 
             DrawVisualGhost();
+        }
+
+        private void DrawColliderGizmo(Collider col, Vector3 center, Vector3 size)
+        {
+            if (col is BoxCollider)
+            {
+                Gizmos.DrawCube(center, size);
+                Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 1f);
+                Gizmos.DrawWireCube(center, size);
+            }
+            else if (col is SphereCollider)
+            {
+                Gizmos.DrawSphere(center, size.x);
+                Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 1f);
+                Gizmos.DrawWireSphere(center, size.x);
+            }
         }
 
         private void DrawVisualGhost()
         {
             if (_config == null || _config.VisualPrefab == null) return;
 
-            // Draw a ghost of the visual prefab to help with offset alignment
             Gizmos.color = new Color(1f, 1f, 1f, 0.2f);
-            
-            // Apply Transform + VisualOffset + Container Scale
-            // Order: Root -> Translate(Offset) -> Scale(ContainerLocalScale)
             Matrix4x4 rootMatrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
-            Vector3 containerScale = _visualContainer != null ? _visualContainer.transform.localScale : Vector3.one;
-            
-            Matrix4x4 visualMatrix = rootMatrix * Matrix4x4.Translate(_config.VisualOffset) * Matrix4x4.Scale(containerScale);
+            Matrix4x4 visualMatrix = rootMatrix * Matrix4x4.Translate(_config.VisualOffset) * Matrix4x4.Scale(_config.VisualScale);
 
             foreach (var mf in _config.VisualPrefab.GetComponentsInChildren<MeshFilter>())
             {
                 if (mf.sharedMesh == null) continue;
-                
                 Matrix4x4 meshMatrix = visualMatrix * GetRelativeMatrix(mf.transform, _config.VisualPrefab.transform);
                 Gizmos.matrix = meshMatrix;
                 Gizmos.DrawMesh(mf.sharedMesh);
-                Gizmos.DrawWireMesh(mf.sharedMesh);
             }
         }
 
@@ -142,18 +164,6 @@ namespace Eraflo.Common.ObjectSystem
         {
             if (target == root) return Matrix4x4.identity;
             return GetRelativeMatrix(target.parent, root) * Matrix4x4.TRS(target.localPosition, target.localRotation, target.localScale);
-        }
-
-        private void OnDestroy()
-        {
-            // TODO: Remove from the level manager this object data
-        }
-
-        private void UpdateData()
-        {
-            _runtimeData.Position = new Vector3Serializable(transform.position.x, transform.position.y, transform.position.z);
-            _runtimeData.Rotation = new QuaternionSerializable(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
-            _runtimeData.Scale = new Vector3Serializable(transform.localScale.x, transform.localScale.y, transform.localScale.z);
         }
     }
 }

@@ -15,7 +15,8 @@ MonoBehaviour:
   _name: Bumper
   _visualPrefab: {fileID: 5195090716761092764, guid: 4741d2467f730ba41828bf0bab2d32b8,
     type: 3}
-  _logicIdentity: {fileID: 0}
+  _logicKey: Bumper
+  _visualScale: {x: 1, y: 1, z: 1}
   _pivotCorrection: {x: 0, y: 0, z: 0}
   _physicsCenter: {x: 0, y: 0, z: 0}
   _physicsSize: {x: 1, y: 1, z: 1}

@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: DeadZoneArea
   m_EditorClassIdentifier: 
   _name: DeadZoneArea
-  _visualPrefab: {fileID: 2424908141177732049, guid: 667c2bbd592759b44affff62c3a48ff0, type: 3}
-  _logicIdentity: {fileID: 0}
+  _visualPrefab: {fileID: 2424908141177732049, guid: 667c2bbd592759b44affff62c3a48ff0,
+    type: 3}
+  _logicKey: DeadZone
+  _visualScale: {x: 1, y: 1, z: 1}
   _pivotCorrection: {x: 0, y: 0, z: 0}
   _physicsCenter: {x: 0, y: 0, z: 0}
   _physicsSize: {x: 1, y: 1, z: 1}

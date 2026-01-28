@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1333813704073594528}
   - component: {fileID: 2393203237429393371}
   - component: {fileID: 3246430939622907770}
+  - component: {fileID: 424984781989933223}
   m_Layer: 0
   m_Name: BlowerTrap
   m_TagString: Untagged
@@ -49,7 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _config: {fileID: 11400000, guid: e6c4174f6679ba84ab56fae3262f3b9c, type: 2}
   _visualContainer: {fileID: 6036866239203201424}
-  _collider: {fileID: 2393203237429393371}
+  _physicsCollider: {fileID: 424984781989933223}
+  _areaCollider: {fileID: 2393203237429393371}
   _initialScale: {x: 1, y: 1, z: 1}
 --- !u!65 &2393203237429393371
 BoxCollider:
@@ -66,12 +68,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 2, y: 2, z: 4}
+  m_Center: {x: 0, y: 1, z: 2}
 --- !u!114 &3246430939622907770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,6 +95,27 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!65 &424984781989933223
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738469855354002690}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6036866239203201424
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,8 +141,8 @@ Transform:
   m_GameObject: {fileID: 6036866239203201424}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 856302520596721887}
