@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _config: {fileID: 11400000, guid: 476b66821067f4f469061ef39306dd52, type: 2}
-  _visualContainer: {fileID: 0}
+  _visualContainer: {fileID: 2620361495703038606}
   _physicsCollider: {fileID: 0}
   _areaCollider: {fileID: 7239424242854402379}
   _runtimeData:
@@ -286,8 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isLocked: 0
-  lockVisual: {fileID: 919132149155446097, guid: 48832661656e0944c926b1bed4f62f8d,
-    type: 3}
+  lockVisual: {fileID: 919132149155446097, guid: 48832661656e0944c926b1bed4f62f8d, type: 3}
   lockedTint: {r: 0.7, g: 0.7, b: 1, a: 1}
   lockSound: {fileID: 8300000, guid: cc4dae556c568b542983a29944ee7371, type: 3}
   unlockSound: {fileID: 8300000, guid: a805751749e1e064e892404d341453ef, type: 3}
