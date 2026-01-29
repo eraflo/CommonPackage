@@ -22,6 +22,15 @@ namespace Eraflo.Common.ObjectSystem
         [SerializeField] protected Vector3 _physicsCenter = Vector3.zero;
         [Tooltip("The size/extents of the solid physical collider.")]
         [SerializeField] protected Vector3 _physicsSize = Vector3.one;
+        
+        [Header("Constraints")]
+        [Tooltip("Physics constraints for the Rigidbody (Position and Rotation axes).")]
+        [SerializeField] protected RigidbodyConstraints _physicsConstraints = RigidbodyConstraints.FreezeRotation;
+        
+        [Tooltip("Whether to synchronize Scale over the network.")]
+        [SerializeField] protected bool _syncScaleX = false;
+        [SerializeField] protected bool _syncScaleY = false;
+        [SerializeField] protected bool _syncScaleZ = false;
 
         public string Name => _name;
         public GameObject VisualPrefab => _visualPrefab;
@@ -31,6 +40,10 @@ namespace Eraflo.Common.ObjectSystem
         public Vector3 VisualScale => _visualScale;
         public Vector3 PhysicsCenter => _physicsCenter;
         public Vector3 PhysicsSize => _physicsSize;
+        public RigidbodyConstraints PhysicsConstraints => _physicsConstraints;
+        public bool SyncScaleX => _syncScaleX;
+        public bool SyncScaleY => _syncScaleY;
+        public bool SyncScaleZ => _syncScaleZ;
 
         /// <summary>
         /// Global gizmo drawing for shared object properties.

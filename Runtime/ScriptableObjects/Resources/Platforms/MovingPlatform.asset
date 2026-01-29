@@ -20,6 +20,10 @@ MonoBehaviour:
   _pivotCorrection: {x: 0, y: 0, z: 0}
   _physicsCenter: {x: 0, y: 0, z: 0}
   _physicsSize: {x: 0.8, y: 0.2, z: 0.8}
+  _physicsConstraints: 112
+  _syncScaleX: 0
+  _syncScaleY: 0
+  _syncScaleZ: 0
   _startOffset: {x: 0, y: 0, z: 0}
   _endOffset: {x: 0, y: 0, z: 5}
   _travelTime: 3
