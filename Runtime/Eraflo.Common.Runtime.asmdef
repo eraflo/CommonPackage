@@ -4,7 +4,13 @@
     "references": [
         "Newtonsoft.Json",
         "Unity.InputSystem",
-        "Unity.XR.Interaction.Toolkit"
+        "Unity.XR.Interaction.Toolkit",
+        "CFXRRuntime",
+        "Unity.RenderPipelines.Universal.Shaders",
+        "Unity.RenderPipelines.Core.ShaderLibrary",
+        "KinoBloom.Runtime",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
