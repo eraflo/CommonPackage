@@ -115,6 +115,37 @@ namespace Eraflo.Common.ObjectSystem
             }
         }
 
+        /// <summary>
+        /// Retrieves a value for a given field, prioritising any manual overrides found in the BaseObject's RuntimeData.
+        /// Useful for system-level logic like collider synchronization.
+        /// </summary>
+        public static T GetOverriddenValue<T>(BaseObject owner, string fieldName, T defaultValue)
+        {
+            if (owner == null || owner.RuntimeData == null || owner.RuntimeData.Overrides == null)
+                return defaultValue;
+
+            var over = owner.RuntimeData.Overrides.Find(o => o.Name == fieldName);
+            if (over == null) return defaultValue;
+
+            try
+            {
+                object parsed = ParseValue(over.StringValue, over.TypeName);
+                if (parsed == null) return defaultValue;
+
+                if (parsed is T result) return result;
+
+                // Handle common implicit conversions between serializable types and Unity types
+                if (parsed is Vector3Serializable v3s && typeof(T) == typeof(Vector3)) return (T)(object)v3s.ToVector3();
+                if (parsed is QuaternionSerializable qs && typeof(T) == typeof(Quaternion)) return (T)(object)qs.ToQuaternion();
+
+                return (T)Convert.ChangeType(parsed, typeof(T));
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
         private static bool IsUnityStruct(Type type)
         {
             return type == typeof(Vector2) || type == typeof(Vector3) || type == typeof(Vector4) ||

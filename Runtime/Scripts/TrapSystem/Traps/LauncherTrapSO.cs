@@ -37,7 +37,10 @@ namespace FallGuys.Traps.Launcher
             {
                 sphere.isTrigger = true;
                 sphere.center = Vector3.zero;
-                sphere.radius = _detectionRange;
+
+                // Resolve detection range with overrides
+                float detectionRange = ParameterReflector.GetOverriddenValue(owner, "_detectionRange", _detectionRange);
+                sphere.radius = detectionRange;
             }
         }
 

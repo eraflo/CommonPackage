@@ -21,6 +21,11 @@ namespace Eraflo.Common.LevelSystem
         }
 
         /// <summary>
+        /// Parameterless constructor for JSON deserialization.
+        /// </summary>
+        public Level() : this("Untitled") { }
+
+        /// <summary>
         /// Validates the level structure.
         /// Must have exactly 1 StartArea and 1 FinishArea.
         /// </summary>
@@ -47,6 +52,57 @@ namespace Eraflo.Common.LevelSystem
             else if (endCount > 1) errorMessage = "[ERROR] Multiple Finish Areas detected. Only one is allowed.";
 
             return string.IsNullOrEmpty(errorMessage);
+        }
+
+        /// <summary>
+        /// Calculates and assigns checkpoint indices based on distance from StartArea.
+        /// Should be called before saving the level.
+        /// </summary>
+        public void CalculateCheckpointIndices()
+        {
+            // Find StartArea position
+            Vector3 startPos = Vector3.zero;
+            foreach (var obj in Objects)
+            {
+                if (obj.Config != null && obj.Config.LogicKey == "StartArea")
+                {
+                    startPos = obj.Position.ToVector3();
+                    break;
+                }
+            }
+
+            // Collect all checkpoints with their distances
+            var checkpoints = new List<(ObjectData data, float distance)>();
+            foreach (var obj in Objects)
+            {
+                if (obj.Config != null && obj.Config.LogicKey == "Checkpoint")
+                {
+                    float dist = Vector3.Distance(startPos, obj.Position.ToVector3());
+                    checkpoints.Add((obj, dist));
+                }
+            }
+
+            // Sort by distance from start
+            checkpoints.Sort((a, b) => a.distance.CompareTo(b.distance));
+
+            // Assign indices as ParameterOverrides
+            for (int i = 0; i < checkpoints.Count; i++)
+            {
+                var obj = checkpoints[i].data;
+
+                // Remove existing CheckpointIndex override if any
+                obj.Overrides.RemoveAll(o => o.Name == "_checkpointIndex");
+
+                // Add new override with calculated index
+                obj.Overrides.Add(new ParameterOverride
+                {
+                    Name = "_checkpointIndex",
+                    TypeName = "System.Int32",
+                    StringValue = i.ToString()
+                });
+            }
+
+            Debug.Log($"[Level] Calculated indices for {checkpoints.Count} checkpoints");
         }
     }
 }

@@ -15,5 +15,10 @@ namespace Eraflo.Common.ObjectSystem
             this.y = y;
             this.z = z;
         }
+
+        public UnityEngine.Vector3 ToVector3() => new UnityEngine.Vector3(x, y, z);
+
+        public static implicit operator UnityEngine.Vector3(Vector3Serializable v) => new UnityEngine.Vector3(v.x, v.y, v.z);
+        public static implicit operator Vector3Serializable(UnityEngine.Vector3 v) => new Vector3Serializable(v.x, v.y, v.z);
     }
 }

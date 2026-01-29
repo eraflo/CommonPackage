@@ -36,22 +36,29 @@ namespace Eraflo.Common.AreaSystem
 
             collider.isTrigger = true;
 
+            // Resolve values with overrides
+            Vector3 center = ParameterReflector.GetOverriddenValue(owner, "_center", _center);
+            Vector3 areaSize = ParameterReflector.GetOverriddenValue(owner, "_areaSize", _areaSize);
+            float radius = ParameterReflector.GetOverriddenValue(owner, "_radius", _radius);
+            float height = ParameterReflector.GetOverriddenValue(owner, "_capsuleHeight", _capsuleHeight);
+            int direction = ParameterReflector.GetOverriddenValue(owner, "_capsuleDirection", _capsuleDirection);
+
             if (collider is BoxCollider box)
             {
-                box.center = _center;
-                box.size = _areaSize;
+                box.center = center;
+                box.size = areaSize;
             }
             else if (collider is SphereCollider sphere)
             {
-                sphere.center = _center;
-                sphere.radius = _radius;
+                sphere.center = center;
+                sphere.radius = radius;
             }
             else if (collider is CapsuleCollider capsule)
             {
-                capsule.center = _center;
-                capsule.radius = _radius;
-                capsule.height = _capsuleHeight;
-                capsule.direction = _capsuleDirection;
+                capsule.center = center;
+                capsule.radius = radius;
+                capsule.height = height;
+                capsule.direction = direction;
             }
         }
 

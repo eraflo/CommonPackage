@@ -17,5 +17,10 @@ namespace Eraflo.Common.ObjectSystem
             this.z = z;
             this.w = w;
         }
+
+        public UnityEngine.Quaternion ToQuaternion() => new UnityEngine.Quaternion(x, y, z, w);
+
+        public static implicit operator UnityEngine.Quaternion(QuaternionSerializable q) => new UnityEngine.Quaternion(q.x, q.y, q.z, q.w);
+        public static implicit operator QuaternionSerializable(UnityEngine.Quaternion q) => new QuaternionSerializable(q.x, q.y, q.z, q.w);
     }
 }
