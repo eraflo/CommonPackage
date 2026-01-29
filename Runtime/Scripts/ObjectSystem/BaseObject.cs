@@ -100,7 +100,9 @@ namespace Eraflo.Common.ObjectSystem
             }
 
             // Re-sync internals if already Awoken
-            if (gameObject.activeInHierarchy)
+            // GHOST PROTECTION: Do NOT re-sync visuals/colliders for ghosts as it would clear the ghost material
+            // and re-enable colliders, breaking the preview.
+            if (gameObject.activeInHierarchy && !gameObject.name.StartsWith("GHOST_"))
             {
                 SyncVisual();
                 SyncAllColliders();
