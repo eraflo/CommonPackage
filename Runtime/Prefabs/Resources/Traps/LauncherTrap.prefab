@@ -86,6 +86,23 @@ MonoBehaviour:
   _visualContainer: {fileID: 3167939795354593592}
   _physicsCollider: {fileID: 383400879904177534}
   _areaCollider: {fileID: 535326256027072971}
+  _runtimeData:
+    LogicKey: 
+    Position:
+      x: 0
+      y: 0
+      z: 0
+    Rotation:
+      x: 0
+      y: 0
+      z: 0
+      w: 0
+    Scale:
+      x: 0
+      y: 0
+      z: 0
+    Overrides: []
+    Config: {fileID: 0}
   _initialScale: {x: 1, y: 1, z: 1}
 --- !u!65 &383400879904177534
 BoxCollider:
@@ -413,12 +430,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7065843470503354674}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a38bb0d0270df942a48336aac9e3f39, type: 3}
+  m_Script: {fileID: 11500000, guid: 9da80e87c6fa2ba45ab49b173387e601, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isLocked: 0
-  lockVisual: {fileID: 919132149155446097, guid: 48832661656e0944c926b1bed4f62f8d, type: 3}
+  lockVisual: {fileID: 919132149155446097, guid: 48832661656e0944c926b1bed4f62f8d,
+    type: 3}
   lockedTint: {r: 0.7, g: 0.7, b: 1, a: 1}
-  lockSound: {fileID: 8300000, guid: 383a76b97f0ecee4eae7edebd402de38, type: 3}
-  unlockSound: {fileID: 8300000, guid: 0f9fa418d1b1a4d4b978cb5fbc4df1df, type: 3}
+  lockSound: {fileID: 8300000, guid: cc4dae556c568b542983a29944ee7371, type: 3}
+  unlockSound: {fileID: 8300000, guid: a805751749e1e064e892404d341453ef, type: 3}
   audioSource: {fileID: 6950133124976252582}
