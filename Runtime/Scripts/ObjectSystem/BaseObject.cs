@@ -35,6 +35,7 @@ namespace Eraflo.Common.ObjectSystem
         public Action<Collision> onCollisionStay;
         public Action<Collision> onCollisionExit;
 
+        [SerializeField, HideInInspector]
         private ObjectData _runtimeData;
         [SerializeField] private Vector3 _initialScale = Vector3.one;
 
@@ -45,6 +46,11 @@ namespace Eraflo.Common.ObjectSystem
         }
 
         public ObjectData RuntimeData => _runtimeData;
+        public ObjectSO Config => _config;
+
+        public bool ShowRuntimePreview { get; set; }
+        public bool SuppressLocalPreview { get; set; }
+        private VisualPreviewDrawer _previewDrawer;
 
         /// <summary>
         /// Manually initializes the object with specific data.
@@ -53,13 +59,41 @@ namespace Eraflo.Common.ObjectSystem
         public virtual void Initialize(ObjectData data)
         {
             _runtimeData = data;
-            _config = data.Config;
             
+            // Only overwrite config if it's provided in data
+            if (data.Config != null)
+            {
+                _config = data.Config;
+            }
+            else if (_config != null && data.Config == null)
+            {
+                // Restore reference in data if it was missing (e.g. loaded from JSON)
+                data.Config = _config;
+            }
+
             transform.position = data.Position.ToVector3();
             transform.rotation = data.Rotation.ToQuaternion();
             transform.localScale = data.Scale.ToVector3();
 
-            // Ensure LogicKey is synced if it was missing from data but config is present
+            UpdateRuntimeDataTransform(); // Ensure internal data matches transform immediately
+            
+            // AUTOMATIC CONFIG RESOLUTION: 
+            // If config is null (common after JSON load), use ObjectRegistry to restore reference via LogicKey
+            if (_config == null && !string.IsNullOrEmpty(data.LogicKey))
+            {
+                _config = ObjectRegistry.GetConfig(data.LogicKey);
+
+                if (_config == null)
+                {
+                    Debug.LogWarning($"[BaseObject] Failed to resolve Config for LogicKey: {data.LogicKey} via ObjectRegistry.");
+                }
+                else
+                {
+                    data.Config = _config; // Restore reference in data too
+                }
+            }
+
+            // Sync LogicKey back to data if it was somehow missing but config exists
             if (string.IsNullOrEmpty(data.LogicKey) && _config != null)
             {
                 data.LogicKey = _config.LogicKey;
@@ -85,12 +119,42 @@ namespace Eraflo.Common.ObjectSystem
             {
                 _runtimeData = new ObjectData(_config, transform.position, transform.rotation, _initialScale);
             }
+            else if (_runtimeData != null && _runtimeData.Config == null)
+            {
+                _runtimeData.Config = _config;
+            }
 
             SyncVisual();
             SyncAllColliders();
 
             // Broad-casting creation for project-specific logic injection
             OnObjectCreated?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Synchronizes the RuntimeData (Position, Rotation, Scale) with the current Transform state.
+        /// Essential before saving to ensure the persistence matches the actual layout.
+        /// </summary>
+        public void UpdateRuntimeDataTransform()
+        {
+            if (_runtimeData == null)
+            {
+                if (_config != null)
+                {
+                    _runtimeData = new ObjectData(_config, transform.position, transform.rotation, transform.localScale);
+                }
+                else
+                {
+                    _runtimeData = new ObjectData();
+                    // GUESS: Use name but warn user. This happens when dragging prefabs without SO link.
+                    _runtimeData.LogicKey = gameObject.name.Replace("EditorObj_", ""); 
+                    Debug.LogWarning($"[BaseObject] {gameObject.name} has no Config SO link! Guessing LogicKey: {_runtimeData.LogicKey}");
+                }
+            }
+
+            _runtimeData.Position = new Vector3Serializable(transform.position.x, transform.position.y, transform.position.z);
+            _runtimeData.Rotation = new QuaternionSerializable(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+            _runtimeData.Scale = new Vector3Serializable(transform.localScale.x, transform.localScale.y, transform.localScale.z);
         }
 
         private void SyncVisual()
@@ -116,6 +180,30 @@ namespace Eraflo.Common.ObjectSystem
         }
 
         protected virtual void Start() { }
+
+        protected virtual void LateUpdate()
+        {
+            if (ShowRuntimePreview && !SuppressLocalPreview && _config != null)
+            {
+                if (_previewDrawer == null)
+                {
+                    GameObject go = new GameObject("VisualPreviewDrawer");
+                    go.transform.SetParent(transform);
+                    _previewDrawer = go.AddComponent<VisualPreviewDrawer>();
+                }
+                
+                if (!_previewDrawer.gameObject.activeSelf)
+                    _previewDrawer.gameObject.SetActive(true);
+                
+                _previewDrawer.Clear();
+                _config.DrawRuntimePreview(this, _previewDrawer);
+            }
+            else if (_previewDrawer != null && _previewDrawer.gameObject.activeSelf)
+            {
+                _previewDrawer.Clear();
+                _previewDrawer.gameObject.SetActive(false);
+            }
+        }
 
 #if UNITY_EDITOR
         protected virtual void OnValidate()
@@ -151,8 +239,11 @@ namespace Eraflo.Common.ObjectSystem
         {
             if (_config == null || _visualContainer == null) return;
 
-            _visualContainer.transform.localPosition = _config.VisualOffset;
-            _visualContainer.transform.localScale = _config.VisualScale;
+            Vector3 offset = ParameterReflector.GetOverriddenValue(this, "_pivotCorrection", _config.VisualOffset);
+            Vector3 scale = ParameterReflector.GetOverriddenValue(this, "_visualScale", _config.VisualScale);
+
+            _visualContainer.transform.localPosition = offset;
+            _visualContainer.transform.localScale = scale;
         }
 
         // --- Unity Physics Callbacks ---

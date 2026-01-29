@@ -115,11 +115,33 @@ namespace Eraflo.Common.ObjectSystem
             }
         }
 
-        /// <summary>
-        /// Retrieves a value for a given field, prioritising any manual overrides found in the BaseObject's RuntimeData.
-        /// Useful for system-level logic like collider synchronization.
-        /// </summary>
+        public static string SerializeValue(object value)
+        {
+            if (value == null) return "";
+
+            // 1. Unity types
+            if (value is Vector2 v2) return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0},{1}", v2.x, v2.y);
+            if (value is Vector3 v3) return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0},{1},{2}", v3.x, v3.y, v3.z);
+            if (value is Vector4 v4) return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0},{1},{2},{3}", v4.x, v4.y, v4.z, v4.w);
+            if (value is Quaternion q) return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0},{1},{2},{3}", q.x, q.y, q.z, q.w);
+            if (value is Color c) return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0},{1},{2},{3}", c.r, c.g, c.b, c.a);
+            
+            // 2. Enum
+            if (value.GetType().IsEnum) return value.ToString();
+
+            // 3. IConvertible (Primitives)
+            if (value is IConvertible conv) return conv.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+            // 4. Fallback to JSON for complex objects
+            return JsonConvert.SerializeObject(value);
+        }
+
         public static T GetOverriddenValue<T>(BaseObject owner, string fieldName, T defaultValue)
+        {
+            return (T)GetOverriddenValue(owner, fieldName, typeof(T), defaultValue);
+        }
+
+        public static object GetOverriddenValue(BaseObject owner, string fieldName, Type fieldType, object defaultValue)
         {
             if (owner == null || owner.RuntimeData == null || owner.RuntimeData.Overrides == null)
                 return defaultValue;
@@ -132,13 +154,13 @@ namespace Eraflo.Common.ObjectSystem
                 object parsed = ParseValue(over.StringValue, over.TypeName);
                 if (parsed == null) return defaultValue;
 
-                if (parsed is T result) return result;
+                if (fieldType.IsAssignableFrom(parsed.GetType())) return parsed;
 
                 // Handle common implicit conversions between serializable types and Unity types
-                if (parsed is Vector3Serializable v3s && typeof(T) == typeof(Vector3)) return (T)(object)v3s.ToVector3();
-                if (parsed is QuaternionSerializable qs && typeof(T) == typeof(Quaternion)) return (T)(object)qs.ToQuaternion();
+                if (parsed is Vector3Serializable v3s && fieldType == typeof(Vector3)) return v3s.ToVector3();
+                if (parsed is QuaternionSerializable qs && fieldType == typeof(Quaternion)) return qs.ToQuaternion();
 
-                return (T)Convert.ChangeType(parsed, typeof(T));
+                return Convert.ChangeType(parsed, fieldType);
             }
             catch
             {
@@ -160,7 +182,7 @@ namespace Eraflo.Common.ObjectSystem
                 string s = value.Trim('(', ')', ' ', '{', '}');
                 string[] p = s.Split(new[] { ',', ':', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                float get(int i) => p.Length > i ? float.Parse(p[i].Replace("x", "").Replace("y", "").Replace("z", "").Replace("w", "").Replace("r", "").Replace("g", "").Replace("b", "").Replace("a", "").Replace("\"", "").Trim(), System.Globalization.CultureInfo.InvariantCulture) : 0f;
+                float get(int i) => p.Length > i ? float.Parse(p[i].Replace("x", "").Replace("y", "").Replace("z", "").Replace("w", "").Replace("r", "").Replace("g", "").Replace("b", "").Replace("a", "").Replace("\"", "").Replace(',', '.').Trim(), System.Globalization.CultureInfo.InvariantCulture) : 0f;
 
                 if (type == typeof(Vector2)) return new Vector2(get(0), get(1));
                 if (type == typeof(Vector3)) return new Vector3(get(0), get(1), get(2));

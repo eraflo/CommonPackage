@@ -38,6 +38,12 @@ namespace Eraflo.Common.ObjectSystem
         public virtual void DrawGizmos(BaseObject owner) { }
 
         /// <summary>
+        /// Draws a runtime visual preview (shapes using LineRenderer) in the scene.
+        /// This should respect runtime overrides.
+        /// </summary>
+        public virtual void DrawRuntimePreview(BaseObject owner, VisualPreviewDrawer drawer) { }
+
+        /// <summary>
         /// Synchronizes the SOLID physical collider (e.g., the fan body).
         /// Default implementation uses _physicsCenter and _physicsSize.
         /// </summary>

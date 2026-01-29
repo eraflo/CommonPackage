@@ -21,6 +21,21 @@ namespace Eraflo.Common.PlatformSystem
         public float TravelTime => _travelTime;
         public float WaitDelay => _waitDelay;
 
+        public override void DrawRuntimePreview(Eraflo.Common.ObjectSystem.BaseObject owner, VisualPreviewDrawer drawer)
+        {
+            // Resolve offsets with overrides
+            Vector3 startOffset = ParameterReflector.GetOverriddenValue(owner, "_startOffset", _startOffset);
+            Vector3 endOffset = ParameterReflector.GetOverriddenValue(owner, "_endOffset", _endOffset);
+
+            Color pathColor = Color.yellow;
+            drawer.DrawLine(startOffset, endOffset, pathColor, owner.transform.localToWorldMatrix);
+
+            // Draw markers at destinations
+            Vector3 markerSize = PhysicsSize * 0.5f;
+            drawer.DrawBox(startOffset, markerSize, new Color(1, 1, 0, 0.4f), owner.transform.localToWorldMatrix);
+            drawer.DrawBox(endOffset, markerSize, new Color(1, 1, 0, 0.4f), owner.transform.localToWorldMatrix);
+        }
+
         /// <summary>
         /// Visualizes the movement path in the editor.
         /// </summary>

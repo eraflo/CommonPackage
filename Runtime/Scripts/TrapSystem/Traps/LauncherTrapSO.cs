@@ -44,6 +44,19 @@ namespace FallGuys.Traps.Launcher
             }
         }
 
+        public override void DrawRuntimePreview(BaseObject owner, VisualPreviewDrawer drawer)
+        {
+            // Resolve parameters with overrides for runtime visualization
+            float detectionRange = ParameterReflector.GetOverriddenValue(owner, "_detectionRange", _detectionRange);
+            float searchAngleRange = ParameterReflector.GetOverriddenValue(owner, "_searchAngleRange", _searchAngleRange);
+
+            // Draw Detection Sphere (as circles for better visibility in VR)
+            drawer.DrawCircle(Vector3.zero, detectionRange, new Color(1, 0, 0, 0.4f), owner.transform.localToWorldMatrix, Vector3.up);
+            
+            // Draw Search Arc
+            drawer.DrawArc(Vector3.zero, detectionRange, searchAngleRange, new Color(1, 0.5f, 0, 0.6f), owner.transform.localToWorldMatrix);
+        }
+
         public override void DrawGizmos(BaseObject owner)
         {
             // Draw Detection Sphere

@@ -62,6 +62,7 @@ namespace Eraflo.Common.LevelSystem
             try
             {
                 _currentLevel = JsonConvert.DeserializeObject<Level>(json);
+                RelinkConfigs();
                 NotifyChange();
             }
             catch (Exception e)
@@ -69,6 +70,27 @@ namespace Eraflo.Common.LevelSystem
                 Debug.LogError($"[LevelDatabase] Failed to load level from JSON: {e.Message}");
             }
         }
+
+        private void RelinkConfigs()
+        {
+            if (_currentLevel == null || _currentLevel.Objects == null) return;
+
+            ObjectRegistry.Initialize(); // Ensure registry is ready
+            int successCount = 0;
+            int total = _currentLevel.Objects.Count;
+
+            foreach (var obj in _currentLevel.Objects)
+            {
+                if (string.IsNullOrEmpty(obj.LogicKey)) continue;
+
+                obj.Config = ObjectRegistry.GetConfig(obj.LogicKey);
+                if (obj.Config != null) successCount++;
+            }
+
+            Debug.Log($"[LevelDatabase] Relinked {successCount}/{total} configurations using ObjectRegistry.");
+        }
+
+        public void TriggerRefresh() => NotifyChange();
 
         private void NotifyChange()
         {

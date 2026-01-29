@@ -34,6 +34,22 @@ namespace Eraflo.Common.PlatformSystem
             }
         }
 
+        public override void DrawRuntimePreview(Eraflo.Common.ObjectSystem.BaseObject owner, VisualPreviewDrawer drawer)
+        {
+            // Resolve with overrides
+            Vector3 center = ParameterReflector.GetOverriddenValue(owner, "_triggerCenter", _triggerCenter);
+            Vector3 size = ParameterReflector.GetOverriddenValue(owner, "_triggerSize", _triggerSize);
+            float strength = ParameterReflector.GetOverriddenValue(owner, "_jumpStrength", _jumpStrength);
+
+            // Visualize the jump trigger (Green)
+            drawer.DrawBox(center, size, new Color(0, 1, 0, 0.5f), owner.transform.localToWorldMatrix);
+
+            // Visualize the jump direction (Upward Arrow)
+            Vector3 arrowStart = center;
+            Vector3 arrowEnd = center + Vector3.up * (strength / 10f);
+            drawer.DrawLine(arrowStart, arrowEnd, Color.green, owner.transform.localToWorldMatrix);
+        }
+
         public override void DrawGizmos(Eraflo.Common.ObjectSystem.BaseObject owner)
         {
             Gizmos.matrix = owner.transform.localToWorldMatrix;

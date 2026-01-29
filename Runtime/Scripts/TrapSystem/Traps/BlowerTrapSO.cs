@@ -38,6 +38,21 @@ namespace FallGuys.Traps.Blower
             }
         }
 
+        public override void DrawRuntimePreview(BaseObject owner, VisualPreviewDrawer drawer)
+        {
+            // Resolve parameters with overrides
+            Vector3 center = ParameterReflector.GetOverriddenValue(owner, "_zoneCenter", _zoneCenter);
+            Vector3 size = ParameterReflector.GetOverriddenValue(owner, "_zoneSize", _zoneSize);
+
+            Color windColor = new Color(0, 0.5f, 1f, 0.6f);
+            drawer.DrawBox(center, size, windColor, owner.transform.localToWorldMatrix);
+
+            // Draw direction arrow
+            Vector3 arrowStart = center;
+            Vector3 arrowEnd = center + Vector3.forward * (size.z * 0.5f + 1f);
+            drawer.DrawLine(arrowStart, arrowEnd, Color.cyan, owner.transform.localToWorldMatrix);
+        }
+
         public override void DrawGizmos(BaseObject owner)
         {
             Gizmos.color = new Color(0, 0.5f, 1f, 0.3f);

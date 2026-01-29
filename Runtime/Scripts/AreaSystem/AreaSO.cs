@@ -62,6 +62,34 @@ namespace Eraflo.Common.AreaSystem
             }
         }
 
+        public override void DrawRuntimePreview(BaseObject owner, VisualPreviewDrawer drawer)
+        {
+            // Resolve with overrides
+            Vector3 center = ParameterReflector.GetOverriddenValue(owner, "_center", _center);
+            Vector3 areaSize = ParameterReflector.GetOverriddenValue(owner, "_areaSize", _areaSize);
+            float radius = ParameterReflector.GetOverriddenValue(owner, "_radius", _radius);
+            float height = ParameterReflector.GetOverriddenValue(owner, "_capsuleHeight", _capsuleHeight);
+
+            Color color = new Color(_gizmoColor.r, _gizmoColor.g, _gizmoColor.b, 0.6f);
+
+            switch (_shape)
+            {
+                case AreaShape.Box:
+                    drawer.DrawBox(center, areaSize, color, owner.transform.localToWorldMatrix);
+                    break;
+                case AreaShape.Sphere:
+                    drawer.DrawSphere(center, radius, color, owner.transform.localToWorldMatrix);
+                    break;
+                case AreaShape.Capsule:
+                    // Capsule approximation with two spheres and lines
+                    Vector3 up = Vector3.up; // Simplified, should check _capsuleDirection
+                    Vector3 p1 = center + up * (height * 0.5f - radius);
+                    Vector3 p2 = center - up * (height * 0.5f - radius);
+                    drawer.DrawSphere(center, radius, color, owner.transform.localToWorldMatrix); // Just draw a sphere for now as capsule helper is complex
+                    break;
+            }
+        }
+
         public override void DrawGizmos(BaseObject owner)
         {
             Gizmos.color = _gizmoColor;

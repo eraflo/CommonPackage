@@ -14,10 +14,12 @@ namespace Eraflo.Common.ObjectSystem
         public QuaternionSerializable Rotation;
         public Vector3Serializable Scale;
 
-        [JsonIgnore]
+        public List<ParameterOverride> Overrides = new List<ParameterOverride>();
+
+        [SerializeField, JsonIgnore]
         public ObjectSO Config;
 
-        public List<ParameterOverride> Overrides = new List<ParameterOverride>();
+        public ObjectData() { }
 
         public ObjectData(ObjectSO config, Vector3 pos, Quaternion rot, Vector3 scale)
         {
