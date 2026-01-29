@@ -27,7 +27,7 @@ namespace Eraflo.Common.Player
 
             Bounds bounds = _spawnCollider.bounds;
             float x = Random.Range(bounds.min.x, bounds.max.x);
-            float y = bounds.center.y; // Keep Y consistent with the zone center (or floor)
+            float y = bounds.min.y + 0.5f; // Spawn at the bottom of the zone (+ safety offset)
             float z = Random.Range(bounds.min.z, bounds.max.z);
 
             return new Vector3(x, y, z);
