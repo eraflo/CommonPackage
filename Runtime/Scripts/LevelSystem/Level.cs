@@ -51,10 +51,6 @@ namespace Eraflo.Common.LevelSystem
             return string.IsNullOrEmpty(errorMessage);
         }
 
-        /// <summary>
-        /// Calculates and assigns checkpoint indices based on distance from StartArea.
-        /// Should be called before saving the level.
-        /// </summary>
         public void CalculateCheckpointIndices()
         {
             // Find StartArea position
@@ -100,6 +96,28 @@ namespace Eraflo.Common.LevelSystem
             }
 
             Debug.Log($"[Level] Calculated indices for {checkpoints.Count} checkpoints");
+        }
+
+        /// <summary>
+        /// Restores ScriptableObject references for all objects in the level via ObjectRegistry.
+        /// Essential after JSON deserialization.
+        /// </summary>
+        public void RelinkAllConfigs()
+        {
+            if (Objects == null) return;
+
+            ObjectRegistry.Initialize();
+            int successCount = 0;
+
+            foreach (var obj in Objects)
+            {
+                if (string.IsNullOrEmpty(obj.LogicKey)) continue;
+
+                obj.Config = ObjectRegistry.GetConfig(obj.LogicKey);
+                if (obj.Config != null) successCount++;
+            }
+
+            Debug.Log($"[Level] Relinked {successCount}/{Objects.Count} configurations.");
         }
     }
 }

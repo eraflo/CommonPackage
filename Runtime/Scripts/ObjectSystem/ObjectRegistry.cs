@@ -10,6 +10,7 @@ namespace Eraflo.Common.ObjectSystem
     public static class ObjectRegistry
     {
         private static Dictionary<string, ObjectSO> _configs = new Dictionary<string, ObjectSO>();
+        private static Dictionary<string, GameObject> _prefabs = new Dictionary<string, GameObject>();
         private static bool _isInitialized = false;
 
         public static void Initialize()
@@ -17,45 +18,57 @@ namespace Eraflo.Common.ObjectSystem
             if (_isInitialized) return;
 
             _configs.Clear();
+            _prefabs.Clear();
             
-            // Load all ObjectSO assets from any Resources folder
+            // 1. Load all ObjectSO assets from any Resources folder
             ObjectSO[] allConfigs = Resources.LoadAll<ObjectSO>("");
-            
             foreach (var config in allConfigs)
             {
                 if (config == null || string.IsNullOrEmpty(config.LogicKey)) continue;
-                
-                if (!_configs.ContainsKey(config.LogicKey))
+                if (!_configs.ContainsKey(config.LogicKey)) _configs.Add(config.LogicKey, config);
+            }
+
+            // 2. Load all GameObjects to discover functional prefabs via BaseObject link
+            GameObject[] allGameObjects = Resources.LoadAll<GameObject>("");
+            foreach (var go in allGameObjects)
+            {
+                if (go == null) continue;
+                if (go.TryGetComponent<BaseObject>(out var bo))
                 {
-                    _configs.Add(config.LogicKey, config);
-                }
-                else
-                {
-                    Debug.LogWarning($"[ObjectRegistry] Duplicate LogicKey detected: {config.LogicKey}. Only one will be registered.");
+                    // Map prefab by the LogicKey of the SO it is linked to
+                    if (bo.Config != null && !string.IsNullOrEmpty(bo.Config.LogicKey))
+                    {
+                        if (!_prefabs.ContainsKey(bo.Config.LogicKey))
+                        {
+                            _prefabs.Add(bo.Config.LogicKey, go);
+                            Debug.Log($"[ObjectRegistry] Discovered Prefab: '{bo.Config.LogicKey}' -> {go.name}");
+                        }
+                    }
                 }
             }
 
             _isInitialized = true;
-            Debug.Log($"[ObjectRegistry] Initialized with {_configs.Count} configurations.");
+            Debug.Log($"[ObjectRegistry] Initialized with {_configs.Count} configs and {_prefabs.Count} prefabs.");
         }
 
         public static ObjectSO GetConfig(string logicKey)
         {
             if (!_isInitialized) Initialize();
-            
             if (string.IsNullOrEmpty(logicKey)) return null;
+            return _configs.TryGetValue(logicKey, out var config) ? config : null;
+        }
+
+        public static GameObject GetPrefab(string logicKey)
+        {
+            if (!_isInitialized) Initialize();
+            if (string.IsNullOrEmpty(logicKey)) return null;
+
+            if (_prefabs.TryGetValue(logicKey, out var prefab)) return prefab;
             
-            if (_configs.TryGetValue(logicKey, out var config))
-            {
-                return config;
-            }
-            
-            return null;
+            // Fallback: direct name search
+            return Resources.Load<GameObject>(logicKey);
         }
         
-        /// <summary>
-        /// Forces re-initialization (useful if adding configs at runtime or during dev).
-        /// </summary>
         public static void ForceRefresh()
         {
             _isInitialized = false;
