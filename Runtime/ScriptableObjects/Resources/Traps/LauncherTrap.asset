@@ -25,6 +25,7 @@ MonoBehaviour:
     m_Bits: 64
   _rotationSpeed: 90
   _fireRate: 1
+  _bulletPrefab: {fileID: 5699954328242937672, guid: afa2f744b2163894fa8b3e52ad079e49,
+    type: 3}
   _searchAngleRange: 60
   _detectionRange: 10
-  _bulletPrefab: {fileID: 0}

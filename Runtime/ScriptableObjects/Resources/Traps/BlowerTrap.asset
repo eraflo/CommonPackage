@@ -24,6 +24,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _windStrength: 10
-  _particlePrefab: {fileID: 0}
+  _particlePrefab: {fileID: 3696007233179127096, guid: c248f95ffea8b8543bc7ad0fffe0216d,
+    type: 3}
   _zoneCenter: {x: 0, y: 0, z: 2}
   _zoneSize: {x: 1, y: 1, z: 4}
