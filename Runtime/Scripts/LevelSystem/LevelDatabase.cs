@@ -16,6 +16,7 @@ namespace Eraflo.Common.LevelSystem
         [SerializeField] private Level _currentLevel;
         
         public Level CurrentLevel => _currentLevel;
+        public bool IsLoading { get; set; } = false;
 
         public event Action OnLevelChanged;
 
@@ -71,6 +72,7 @@ namespace Eraflo.Common.LevelSystem
 
         private void NotifyChange()
         {
+            if (IsLoading) return;
             OnLevelChanged?.Invoke();
         }
     }
