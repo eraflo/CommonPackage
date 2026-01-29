@@ -46,6 +46,27 @@ namespace Eraflo.Common.ObjectSystem
 
         public ObjectData RuntimeData => _runtimeData;
 
+        /// <summary>
+        /// Manually initializes the object with specific data.
+        /// Useful for spawning objects from a saved level.
+        /// </summary>
+        public virtual void Initialize(ObjectData data)
+        {
+            _runtimeData = data;
+            _config = data.Config;
+            
+            transform.position = data.Position.ToVector3();
+            transform.rotation = data.Rotation.ToQuaternion();
+            transform.localScale = data.Scale.ToVector3();
+
+            // Re-sync internals if already Awoken
+            if (gameObject.activeInHierarchy)
+            {
+                SyncVisual();
+                SyncAllColliders();
+            }
+        }
+
         protected virtual void Awake()
         {
             if (_initialScale.sqrMagnitude < 0.0001f)
@@ -53,28 +74,39 @@ namespace Eraflo.Common.ObjectSystem
                 _initialScale = transform.localScale;
             }
 
-            // Create the runtime data container
-            if (_config != null)
+            // Create default runtime data if not already initialized
+            if (_runtimeData == null && _config != null)
             {
                 _runtimeData = new ObjectData(_config, transform.position, transform.rotation, _initialScale);
             }
 
+            SyncVisual();
+            SyncAllColliders();
+
+            // Broad-casting creation for project-specific logic injection
+            OnObjectCreated?.Invoke(this);
+        }
+
+        private void SyncVisual()
+        {
             // Visual instantiation
             if (_visualContainer != null && _config != null)
             {
-                if (_visualContainer.transform.childCount == 0 && _config.VisualPrefab != null)
+                // Clear old visual if exists
+                foreach (Transform child in _visualContainer.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+
+                if (_config.VisualPrefab != null)
                 {
                     GameObject visual = Instantiate(_config.VisualPrefab, _visualContainer.transform);
                     visual.transform.localPosition = Vector3.zero;
                     visual.transform.localRotation = Quaternion.identity;
                 }
             }
-
-            SyncAllColliders();
+            
             SyncVisualOffset();
-
-            // Broad-casting creation for project-specific logic injection
-            OnObjectCreated?.Invoke(this);
         }
 
         protected virtual void Start() { }
