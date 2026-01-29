@@ -59,6 +59,12 @@ namespace Eraflo.Common.ObjectSystem
             transform.rotation = data.Rotation.ToQuaternion();
             transform.localScale = data.Scale.ToVector3();
 
+            // Ensure LogicKey is synced if it was missing from data but config is present
+            if (string.IsNullOrEmpty(data.LogicKey) && _config != null)
+            {
+                data.LogicKey = _config.LogicKey;
+            }
+
             // Re-sync internals if already Awoken
             if (gameObject.activeInHierarchy)
             {

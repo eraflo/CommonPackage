@@ -31,8 +31,13 @@ namespace Eraflo.Common.LevelSystem
             
             string fullPath = Path.Combine(_saveFolder, filename);
             
-            // Using Newtonsoft with Formatting.Indented
-            string json = JsonConvert.SerializeObject(level, Newtonsoft.Json.Formatting.Indented);
+            // Using Newtonsoft with Formatting.Indented and ReferenceLoopHandling.Ignore
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+            string json = JsonConvert.SerializeObject(level, settings);
 
             try
             {
