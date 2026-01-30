@@ -16,6 +16,7 @@ MonoBehaviour:
   _visualPrefab: {fileID: 8205206535906004307, guid: 61a2e642089fd704ca3a9d72abf9e7b0,
     type: 3}
   _logicKey: StartArea
+  _enableVisualColliders: 1
   _visualScale: {x: 0.2, y: 0.2, z: 0.2}
   _pivotCorrection: {x: -0.5, y: 0, z: -0.5}
   _physicsCenter: {x: 0, y: 0.25, z: 0}

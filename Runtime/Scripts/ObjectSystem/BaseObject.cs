@@ -175,19 +175,6 @@ namespace Eraflo.Common.ObjectSystem
                     GameObject visual = Instantiate(_config.VisualPrefab, _visualContainer.transform);
                     visual.transform.localPosition = Vector3.zero;
                     visual.transform.localRotation = Quaternion.identity;
-
-                    // CLEANUP: If no solid physics collider is assigned, remove all non-trigger colliders 
-                    // from the visual child. They are likely only there for Editor grabbing.
-                    if (_physicsCollider == null)
-                    {
-                        foreach (var col in visual.GetComponentsInChildren<Collider>())
-                        {
-                            if (!col.isTrigger)
-                            {
-                                Destroy(col);
-                            }
-                        }
-                    }
                 }
             }
             

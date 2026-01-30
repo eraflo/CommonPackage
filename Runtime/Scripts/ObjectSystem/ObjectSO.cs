@@ -13,6 +13,9 @@ namespace Eraflo.Common.ObjectSystem
         [SerializeField] protected GameObject _visualPrefab;
         [SerializeField] private string _logicKey;
 
+        [Tooltip("If true, non-trigger colliders in the visual prefab will be kept. If false, they will be destroyed at runtime (allowing VR Editor grabbing while remaining non-solid in-game).")]
+        [SerializeField] protected bool _enableVisualColliders = false;
+
         [Header("Visuals")]
         [SerializeField] protected Vector3 _visualScale = Vector3.one;
         [SerializeField] protected Vector3 _pivotCorrection = Vector3.zero;
@@ -35,6 +38,7 @@ namespace Eraflo.Common.ObjectSystem
         public string Name => _name;
         public GameObject VisualPrefab => _visualPrefab;
         public string LogicKey => _logicKey;
+        public bool EnableVisualColliders => _enableVisualColliders;
         public Vector3 PivotCorrection => _pivotCorrection;
         public virtual Vector3 VisualOffset => PivotCorrection;
         public Vector3 VisualScale => _visualScale;

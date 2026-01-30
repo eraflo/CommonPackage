@@ -16,6 +16,7 @@ MonoBehaviour:
   _visualPrefab: {fileID: 1728367123960093460, guid: cb219fb371521054188c0bae8153e9cd,
     type: 3}
   _logicKey: CheckpointZone
+  _enableVisualColliders: 1
   _visualScale: {x: 0.2, y: 0.2, z: 0.2}
   _pivotCorrection: {x: -0.5, y: -0.5, z: -0.5}
   _physicsCenter: {x: 0, y: -0.25, z: 0}

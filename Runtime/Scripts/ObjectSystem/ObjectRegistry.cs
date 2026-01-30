@@ -55,7 +55,10 @@ namespace Eraflo.Common.ObjectSystem
         {
             if (!_isInitialized) Initialize();
             if (string.IsNullOrEmpty(logicKey)) return null;
-            return _configs.TryGetValue(logicKey, out var config) ? config : null;
+            
+            bool found = _configs.TryGetValue(logicKey, out var config);
+            if (!found) Debug.LogWarning($"[ObjectRegistry] Config NOT found for LogicKey: '{logicKey}'");
+            return config;
         }
 
         public static GameObject GetPrefab(string logicKey)
@@ -65,8 +68,12 @@ namespace Eraflo.Common.ObjectSystem
 
             if (_prefabs.TryGetValue(logicKey, out var prefab)) return prefab;
             
+            Debug.LogWarning($"[ObjectRegistry] Prefab NOT found in indexed map for LogicKey: '{logicKey}'. Trying Resources fallback...");
+            
             // Fallback: direct name search
-            return Resources.Load<GameObject>(logicKey);
+            var fallback = Resources.Load<GameObject>(logicKey);
+            if (fallback == null) Debug.LogError($"[ObjectRegistry] Resources fallback failed for '{logicKey}'");
+            return fallback;
         }
         
         public static void ForceRefresh()
